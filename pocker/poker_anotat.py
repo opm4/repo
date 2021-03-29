@@ -158,7 +158,7 @@ while game_on:
         if jucator['buget'] == 0:
             players_in_game -= 1
         else:
-            player = jucator['nume']
+            winner = jucator['nume']
     if players_in_game == 1:
-        print(f'The game winner is {player}')
+        print(f'The game winner is {winner}')
         break
