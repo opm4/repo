@@ -61,34 +61,46 @@ def create_deck(opt='r'):
         return None
 
 
-standard_deck = create_deck()
+cards_dict = {'2': 0, '3': 1, '4': 2, '5': 3, '6': 4, '7': 5,
+                      '8': 6, '9': 7, '10': 8, 'J': 9, 'Q': 10, 'K': 11, 'A': 12}
+
 
 # definim lista de jucatori - global passed to function
 jucatori = [{
     'nume': 'Iulian',
     'carti': [],
+    'o_pereche': [],
     'doua_perechi': [],
+    'trei_bucati': [],
     'buget': 500
 },
     {
         'nume': 'Manu',
         'carti': [],
+        'o_pereche': [],
         'doua_perechi': [],
+        'trei_bucati': [],
         'buget': 500
 },
     {
         'nume': 'Adina',
         'carti': [],
+        'o_pereche': [],
         'doua_perechi': [],
+        'trei_bucati': [],
         'buget': 500
 }
 ]
 #  pot should also be global and should reset with game not round
 #  - Game last until we have a winner (last man standing)
 pot = 0
-game_on = True
 
-while game_on:
+standard_deck = create_deck()
+
+while True:
+    # reshuffle the dech when there are less cards than required to play
+    if len(standard_deck) < len(jucatori) * 2 + 5:
+        standard_deck = create_deck()
     # function to give card to player
     for jucator in jucatori:
         if int(jucator['buget']) > 0:
@@ -110,7 +122,6 @@ while game_on:
                     print(
                         f'Ai pariat {pariu}, care este o suma invalida, in banca mai ai disponibil {buget}')
                     print('Te rugam sa mai pariezi inca o data o suma valida.')
-
         else:
             # if there is no buget any more
             pass
@@ -132,13 +143,21 @@ while game_on:
         # numaram cate carti de acelasi tip are jucatorul (ca sa identificam posibile 3 bucati sau 2 perechi)
         counter = Counter(total_carti_jucator)
         most_common = counter.most_common()
+        # most_common_ordered = sorted(most_common)
+        # print(f'Sorted: {most_common_ordered}')
         print(most_common)
         try:
             pair = max([int(card)
-                        for card, counter in most_common if counter == 2])
+                        for card, counter_no in most_common if counter_no == 2])
         except ValueError:
             pair = 0
         jucator['doua_perechi'] = pair
+        try:
+            pair = max([int(card)
+                        for card, counter_no in most_common if counter_no == 3])
+        except ValueError:
+            pair = 0
+        jucator['trei_bucati'] = pair
 
     winner_pair = 0
     winner = None
@@ -149,16 +168,20 @@ while game_on:
 
     winner['buget'] += pot
     nume = winner['nume']
-    print(f"A castigat {nume} ")
+    print(f"A castigat {nume} cu {winner_pair}")
     pprint(jucatori)
 
+    # Check game winner
     players_in_game = len(jucatori)
-
     for jucator in jucatori:
+        # reset player hand
+        jucator['carti'] = []
+        # check how many players are still in the game
         if jucator['buget'] == 0:
             players_in_game -= 1
         else:
             winner = jucator['nume']
     if players_in_game == 1:
+        # End game condition
         print(f'The game winner is {winner}')
         break
