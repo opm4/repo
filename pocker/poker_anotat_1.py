@@ -36,6 +36,8 @@ Ca si tema
    - memorati cati bani are un jucator inainte de fiecare runda
  - adaugati posibilitatea jucarii de mai multe runde
     - pana cand ramane un singur jucator
+To do:
+ - daca exista perechi egale sau nimeni nu are combinatie castigatore sa castige cea mai avantajoasa carte din mana 
 """
 # generam un pachet de carti complet
 # define funtion to get the pack - reshuffle the pach for each round
@@ -150,38 +152,12 @@ while True:
         # print(counter.most_common(3))
         # check hand to see who has higher value
         # count pairs and three of a kind, then the highest value card to decide winner
-        pair = []
-        three = []
         for card, counter_no in most_common:
-            # we found a pair
+            # we found a pair or three of a kind
             if counter_no == 2:
-                pair.append(card)
+                jucator['doua_perechi'].append(card)
             elif counter_no == 3:
-                three.append(card)
-
-        # nume = jucator['nume']
-        # print(f'Pairs {pair} for player {nume}')
-        jucator['doua_perechi'] = pair
-        jucator['trei_bucati'] = three
-        # if len(pair) == 2:
-        #     jucator['doua_perechi'] = pair
-        # elif len(pair) == 1:
-        #     jucator['o_pereche'] = pair
-        # elif len(three) == 1:
-        #     jucator['trei_bucati'] = three
-
-        # try:
-        #     pair = max([int(card)
-        #                 for card, counter_no in most_common if counter_no == 2])
-        # except ValueError:
-        #     pair = 0
-        # jucator['doua_perechi'] = pair
-        # try:
-        #     pair = max([int(card)
-        #                 for card, counter_no in most_common if counter_no == 3])
-        # except ValueError:
-        #     pair = 0
-        # jucator['trei_bucati'] = pair
+                jucator['trei_bucati'].append(card)
 
     # decide winner
     # winner_pair = 0
@@ -193,81 +169,57 @@ while True:
     #  if nobody has two pairs then go to one pair and search who has the biggest combination og pairs
     #  you shoudl also check if multiple plaiers have the same combo to check the highest card
     # in the player hand
+    winner_hand = []
+    winner = {}
     for jucator in jucatori:
-
-        # ,jucator['o_pereche']]
         hand = [jucator['trei_bucati'], jucator['doua_perechi']]
         name = jucator['nume']
         print(f'{name} has {hand}')
-        if jucator['trei_bucati'] != []:
-            if winner == None and winner_hand == []:
-                winner_hand = [jucator['trei_bucati'], 3]
+
+        # check for three pairs
+        if len(hand[0]) != 0 and (winner_hand == [] or winner_hand[1] < 3):
+            winner_hand = [hand, 3]
+            winner = jucator
+        elif len(hand[0]) != 0 and winner_hand[1] == 3:
+            # introduce also min max for three of a kind
+            if cards_dict[hand[0][0]] > cards_dict[winner_hand[0][0]]:
+                winner_hand = [hand, 3]
                 winner = jucator
-            else:
-                #  if the winning hand is a pair then 3 of a kind is new winner
-                if winner != None and winner_hand[1] < 3:
-                    winner_hand = [jucator['trei_bucati'], 3]
-                    winner = jucator
-                else:
-                    #  if value of player hand is greter than the value of already winning hand
-                    if cards_dict[jucator['trei_bucati'][0]] > cards_dict[winner_hand[0][0]]:
-                        winner_hand = [jucator['trei_bucati'], 3]
-                        winner = jucator
-        elif jucator['doua_perechi'] != []:
-            if winner == None and winner_hand == []:
-                if len(jucator['doua_perechi']) >= 2:
-                    winner_hand = [jucator['doua_perechi'], 2]
-                    winner = jucator
-                else:
-                    winner_hand = [jucator['doua_perechi'], 1]
-                    winner = jucator
-            else:
+            elif cards_dict[hand[0][0]] == cards_dict[winner_hand[0][0]]:
+                print(f'Draw game between {winner} and {name}')
 
-                #  if the winning hand is a pair
-                # - update to check how many pairs and find the highest pair in case of two pairs
-                if winner != None and winner_hand[1] >= 2 and len(jucator['doua_perechi']) >= 2:
-                    x = max([cards_dict[i]
-                             for i in jucator['doua_perechi']])
-                    y = max([cards_dict[i]
-                             for i in winner_hand[0]])
-                    if x > y:
-                        winner_hand = [jucator['doua_perechi'], 2]
-                else:
-                    #  if value of player hand is greter than the value of already winning hand
-                    #  should compare both pairs
-                    if cards_dict[jucator['doua_perechi'][0]] > cards_dict[winner_hand[0][0]]:
-                        winner_hand = [jucator['doua_perechi'], 1]
-                        winner = jucator
-        # elif jucator['o_pereche'] != []:
-        #     if winner == None and winner_hand == []:
-        #         winner_hand = [jucator['doua_perechi'], 2]
-        #         winner = jucator
-        #     else:
-        #         #  if the winning hand is a pair
-        #         if winner != None and winner_hand[1] < 1:
-        #             winner_hand = [jucator['o_pereche'], 1]
-        #             winner = jucator
-        #         else:
-        #             #  if value of player hand is greter than the value of already winning hand
-        #             if cards_dict[jucator['o_pereche'][0]] > cards_dict[winner_hand[0][0]]:
-        #                 winner_hand = [jucator['o_pereche'], 1]
-        #                 winner = jucator
-        else:
-            #  if value of player hand is greter than the value of already winning hand
-            #  should check for gratest card in hadn and not take the first card
-            if winner == None and winner_hand == []:
-                # carti_jucator = [numar for numar, culoare in jucator['carti']]
-
-                winner_hand = [jucator['carti'][0][0], 0]
+        # check for 2 pairs or three pairs
+        if len(hand[1]) >= 2 and (winner_hand == [] or winner_hand[1] < 2 or len(winner_hand[0]) < 3):
+            winner_hand = [hand, 2]
+            winner = jucator
+        elif len(hand[1]) == 2 and winner_hand[1] == 2:
+            if max([cards_dict[i] for i in hand[1]]) > max([cards_dict[i] for i in winner_hand[0][1]]):
+                winner_hand = [hand, 2]
                 winner = jucator
-            elif False:
-                # compaire the highest card in hand
-                pass
+            elif max([cards_dict[i] for i in hand[1]]) == max([cards_dict[i] for i in winner_hand[0][1]]):
+                if min([cards_dict[i] for i in hand[1]]) > min([cards_dict[i] for i in winner_hand[0][1]]):
+                    winner_hand = [hand, 2]
+                    winner = jucator
+                elif min([cards_dict[i] for i in hand[1]]) == min([cards_dict[i] for i in winner_hand[0][1]]):
+                    print(f'Draw game between {winner} and {name}')
 
-        # if int(jucator['doua_perechi']) > winner_pair:
-        #     winner_pair = jucator['doua_perechi']
-        #     winner = jucator
-    # get the pot and show the winner
+        # compare a single pair
+        elif len(hand[1]) == 1 and (winner_hand == [] or winner_hand[1] < 1):
+            winner_hand = [hand, 1]
+            winner = jucator
+        elif len(hand[1]) == 1 and winner_hand[1] == 1:
+            if max([cards_dict[i] for i in hand[1]]) > max([cards_dict[i] for i in winner_hand[0][1]]):
+                winner_hand = [hand, 1]
+                winner = jucator
+            elif max([cards_dict[i] for i in hand[1]]) == max([cards_dict[i] for i in winner_hand[0][1]]):
+                print(f'Draw game between {winner} and {name}')
+
+        # if nobody has nothing biggest card winns
+
+            # winner_hand = [0, 0]
+            # winner = name
+
+            # get the pot and show the winner
     winner['buget'] += pot
     nume = winner['nume']
     print(f"A castigat {nume} cu {winner_hand}")
