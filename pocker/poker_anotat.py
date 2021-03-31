@@ -194,8 +194,12 @@ while True:
     #  you shoudl also check if multiple plaiers have the same combo to check the highest card
     # in the player hand
     for jucator in jucatori:
+<<<<<<< HEAD
         # ,jucator['o_pereche']]
         hand = [jucator['trei_bucati'], jucator['doua_perechi']]
+=======
+        hand = [jucator['trei_bucati'],jucator['doua_perechi']]#,jucator['o_pereche']]
+>>>>>>> d5614536e3a6bf05ec5d72371400a54491b3951f
         name = jucator['nume']
         print(f'{name} has {hand}')
         if jucator['trei_bucati'] != []:
@@ -221,6 +225,7 @@ while True:
                     winner_hand = [jucator['doua_perechi'], 1]
                     winner = jucator
             else:
+<<<<<<< HEAD
                 #  if the winning hand is a pair
                 # - update to check how many pairs and find the highest pair in case of two pairs
                 if winner != None and winner_hand[1] >= 2:
@@ -228,6 +233,15 @@ while True:
                     for number in jucator['doua_perechi']:
                         for number1 in winner_hand[0]:
                             if cards_dict[number] > cards_dict[number1]:
+=======
+                #  if the winning hand is a pair 
+                # - update to check how many pairs and find the highest pair in case of two pairs
+                if winner != None and winner_hand[1] >= 2:
+                    winner_pair =[]
+                    for number in jucator['doua_perechi']:
+                        for number1 in winner_hand[0]:
+                            if cards_dict[number] > cards_dict[number1]:                          
+>>>>>>> d5614536e3a6bf05ec5d72371400a54491b3951f
                                 winner_hand = [jucator['doua_perechi'], 2]
                                 winner = jucator
                 else:
