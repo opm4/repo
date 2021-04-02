@@ -215,7 +215,23 @@ while True:
                 print(f'Draw game between {winner} and {name}')
 
         # if nobody has nothing biggest card winns
-
+        if len(hand[0]) == 0 and len(hand[1]) == 0 and winner_hand == []:
+            total_carti_jucator = [numar for numar,
+                                   culoare in total_carti_jucator]
+            winner_hand = [total_carti_jucator, 0]
+            winner = jucator
+        elif len(hand[0]) == 0 and len(hand[1]) == 0 and winner_hand[1] == 0:
+            total_carti_jucator = [numar for numar,
+                                   culoare in total_carti_jucator]
+            if max([cards_dict[i] for i in total_carti_jucator]) > max([cards_dict[i] for i in winner_hand[0]]):
+                winner_hand = [total_carti_jucator, 0]
+                winner = jucator
+            elif max([cards_dict[i] for i in total_carti_jucator]) == max([cards_dict[i] for i in winner_hand[0]]):
+                if min([cards_dict[i] for i in total_carti_jucator]) > min([cards_dict[i] for i in winner_hand[0]]):
+                    winner_hand = [total_carti_jucator, 0]
+                    winner = jucator
+                elif min([cards_dict[i] for i in total_carti_jucator]) == min([cards_dict[i] for i in winner_hand[0]]):
+                    print(f'Draw game between {winner} and {name}')
             # winner_hand = [0, 0]
             # winner = name
 
