@@ -1,6 +1,7 @@
 from pprint import pprint
 from collections import Counter
-
+# ? Check with Mihai Ciobanu for the game details
+# ? Constantin Ionel & Lucian Echim to make a group for
 """
 Python Hold'em Poker
 
@@ -193,6 +194,9 @@ while True:
             winner_hand = [hand, 2]
             winner = jucator
         elif len(hand[1]) == 2 and winner_hand[1] == 2:
+            # extrage secventele repetitive intr-o variabila semnificativa
+            #  mareste lizibilitatea codului
+            #  check rules - select most significat pair/pairs then check cards in hand
             if max([cards_dict[i] for i in hand[1]]) > max([cards_dict[i] for i in winner_hand[0][1]]):
                 winner_hand = [hand, 2]
                 winner = jucator
